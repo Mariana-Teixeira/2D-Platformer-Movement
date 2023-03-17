@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 // How can I turn the states used by each individual StateMachine universal, so it could be used by player and non-players?

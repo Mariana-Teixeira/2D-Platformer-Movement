@@ -1,5 +1,3 @@
-using Mono.Cecil;
-using System.Runtime;
 using UnityEngine;
 
 public class CameraBehaviour : MonoBehaviour

@@ -1,11 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Resources;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 
 // TODO: Comment on more functions so the code become more clear to read.
 // TODO: Add a requirement for attaching this script to an object (requires Rigidbody2D, BoxCollider, etc...)

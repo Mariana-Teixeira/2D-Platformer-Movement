@@ -145,6 +145,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GoMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""c94c5374-8f73-4f51-a28c-9ab1adbe6f2e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -156,6 +165,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ExitGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""db318df0-1eca-4b1a-acc4-6814db049731"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GoMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -173,6 +193,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         // UserInterface
         m_UserInterface = asset.FindActionMap("UserInterface", throwIfNotFound: true);
         m_UserInterface_ExitGame = m_UserInterface.FindAction("ExitGame", throwIfNotFound: true);
+        m_UserInterface_GoMenu = m_UserInterface.FindAction("GoMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -290,11 +311,13 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UserInterface;
     private IUserInterfaceActions m_UserInterfaceActionsCallbackInterface;
     private readonly InputAction m_UserInterface_ExitGame;
+    private readonly InputAction m_UserInterface_GoMenu;
     public struct UserInterfaceActions
     {
         private @PlayerControls m_Wrapper;
         public UserInterfaceActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @ExitGame => m_Wrapper.m_UserInterface_ExitGame;
+        public InputAction @GoMenu => m_Wrapper.m_UserInterface_GoMenu;
         public InputActionMap Get() { return m_Wrapper.m_UserInterface; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -307,6 +330,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @ExitGame.started -= m_Wrapper.m_UserInterfaceActionsCallbackInterface.OnExitGame;
                 @ExitGame.performed -= m_Wrapper.m_UserInterfaceActionsCallbackInterface.OnExitGame;
                 @ExitGame.canceled -= m_Wrapper.m_UserInterfaceActionsCallbackInterface.OnExitGame;
+                @GoMenu.started -= m_Wrapper.m_UserInterfaceActionsCallbackInterface.OnGoMenu;
+                @GoMenu.performed -= m_Wrapper.m_UserInterfaceActionsCallbackInterface.OnGoMenu;
+                @GoMenu.canceled -= m_Wrapper.m_UserInterfaceActionsCallbackInterface.OnGoMenu;
             }
             m_Wrapper.m_UserInterfaceActionsCallbackInterface = instance;
             if (instance != null)
@@ -314,6 +340,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @ExitGame.started += instance.OnExitGame;
                 @ExitGame.performed += instance.OnExitGame;
                 @ExitGame.canceled += instance.OnExitGame;
+                @GoMenu.started += instance.OnGoMenu;
+                @GoMenu.performed += instance.OnGoMenu;
+                @GoMenu.canceled += instance.OnGoMenu;
             }
         }
     }
@@ -328,5 +357,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     public interface IUserInterfaceActions
     {
         void OnExitGame(InputAction.CallbackContext context);
+        void OnGoMenu(InputAction.CallbackContext context);
     }
 }
