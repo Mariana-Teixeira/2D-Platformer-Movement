@@ -1,4 +1,7 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 
 // TODO: Comment on more functions so the code become more clear to read.
 // TODO: Add a requirement for attaching this script to an object (requires Rigidbody2D, BoxCollider, etc...)
@@ -21,8 +24,10 @@ public class PlayerController : MonoBehaviour
     public Vector2 move; // I can't figure out how to make it a private variable.
 
     [SerializeField] float jumpDuration;
+    [SerializeField] float fallDuration;
     [SerializeField] float jumpHeight;
-    float gravity;
+    float jumpGravity;
+    float fallGravity;
     float initialJumpVelocity;
 
     [SerializeField] float maxSpeed;
@@ -72,12 +77,23 @@ public class PlayerController : MonoBehaviour
         {
             return jumpInput;
         }
+        set
+        {
+            jumpInput = value;
+        }
     }
-    public float Gravity
+    public float JumpGravity
     {
         get
         {
-            return gravity;
+            return jumpGravity;
+        }
+    }
+    public float FallGravity
+    {
+        get
+        {
+            return fallGravity;
         }
     }
     public float InitialJumpVelocity
@@ -148,26 +164,28 @@ public class PlayerController : MonoBehaviour
         playerControls.Enable();
 
         float jumpApex = jumpDuration / 2;
-        gravity = (-2 * jumpHeight) / Mathf.Pow(jumpApex, 2);
-        initialJumpVelocity = -gravity * jumpApex;
+        float fallApex = fallDuration / 2;
+        jumpGravity = (-2 * jumpHeight) / Mathf.Pow(jumpApex, 2);
+        fallGravity = (-2 * jumpHeight) / Mathf.Pow(fallApex, 2);
+        initialJumpVelocity = -jumpGravity * jumpApex;
 
         acceleration = maxSpeed / timeToMaxSpeed;
 
         playerMovement = new PlayerMovementStates(this);
         playerCollisions = new PlayerCollisions(this);
         playerAcceleration = new PlayerAccelerationStates(this);
+
+        // What a mess...
+        playerControls.Player.Jumping.started += context => JumpInput = true;
+        playerControls.Player.Jumping.canceled += context => jumpInput = false;
+
+        playerControls.Player.Running.performed += context => runInput = context.ReadValue<float>();
+        playerControls.Player.Running.canceled += context => runInput = 0;
     }
 
     void Update()
     {
-        ReadInput();
         TickTimers();
-    }
-
-    void ReadInput()
-    {
-        runInput = playerControls.Player.Running.ReadValue<float>();
-        jumpInput = playerControls.Player.Jumping.IsPressed();
     }
 
     void TickTimers()
@@ -179,13 +197,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void FixedUpdate() // Why could ellapsed time be important here? (Research more.)
+    private void FixedUpdate() // Why could ellapsed time be important here? (Research more.)
     {
-        MovePlayer();
-
         playerAcceleration.UpdateMachine(); // Calculates the horizontal acceleration of the player for the 'move' vector.
         playerMovement.UpdateMachine(); // Defines the State the player is in, which influences the 'move' vector.
-        playerCollisions.UpdateCollisions(); // Collision Calculation for the 'move' vector.
+        playerCollisions.UpdateCollisions(); // Collision Calculation for the 'move' vector
+        MovePlayer();
     }
 
     void MovePlayer()

@@ -41,12 +41,13 @@ public class PlayerMovementStates
                 break;
 
             case State.JUMP:
-                if (controller.move.y < 0) return State.FALL;
+                if (controller.move.y < 0 || !controller.JumpInput) return State.FALL;
                 else if (controller.Collisions.IsBottomColliding) return State.IDLE;
                 break;
 
             case State.FALL:
                 if (controller.IsJumpBufferInEffect && controller.Collisions.IsBottomColliding) return State.JUMP;
+                else if (controller.Collisions.IsBottomColliding && controller.move.x != 0) return State.RUN;
                 else if (controller.Collisions.IsBottomColliding) return State.IDLE;
                 break;
         }
@@ -75,23 +76,19 @@ public class PlayerMovementStates
     {
         switch (currentState)
         {
-            case State.IDLE:
-                if (controller.Collisions.IsBottomColliding) controller.move = Vector2.zero;
-                break;
-
             case State.RUN:
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
                 break;
 
             case State.JUMP:
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
-                controller.move.y += controller.Gravity * Time.fixedDeltaTime;
+                controller.move.y += controller.JumpGravity * Time.fixedDeltaTime;
                 break;
 
             case State.FALL:
                 if (controller.JumpInput) controller.ResetJumpBufferTimer();
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
-                controller.move.y = controller.move.y + controller.Gravity * Time.fixedDeltaTime;
+                controller.move.y += controller.FallGravity * Time.fixedDeltaTime;
                 break;
         }
     }

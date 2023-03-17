@@ -73,7 +73,7 @@ public class PlayerCollisions
                 HitBoxSize_LeftRight,
                 0.0f,
                 Vector2.left,
-                PlayerSize.x * 0.5f,
+                PlayerSize.x * 0.35f,
                 platformMask);
         }
     }
@@ -86,7 +86,7 @@ public class PlayerCollisions
                 HitBoxSize_LeftRight,
                 0.0f,
                 Vector2.right,
-                PlayerSize.x * 0.5f,
+                PlayerSize.x * 0.35f,
                 platformMask);
         }
     }
@@ -133,37 +133,39 @@ public class PlayerCollisions
     // TODO: Should I turn this into a switch?
     public void UpdateCollisions()
     {
-        if (IsTopHitColliding && controller.move.y > 0) CheckTopCollisions();
-        if (IsBottomColliding && controller.move.y < 0) CheckBottomCollisions();
-        if (IsLeftHitColliding && controller.move.x < 0) CheckLeftCollisions();
-        if (IsRightHitColliding && controller.move.x > 0) CheckRightCollisions();
+        if (IsTopHitColliding && controller.move.y > 0) ReactTopCollision();
+        if (IsBottomColliding && controller.move.y < 0) ReactBottomCollision();
+        if (IsLeftHitColliding && controller.move.x < 0) ReactLeftCollision();
+        if (IsRightHitColliding && controller.move.x > 0) ReactRightCollision();
     }
 
-    void CheckTopCollisions()
+    void ReactTopCollision()
     {
         float difference = controller.BoxCollider.bounds.max.y - TopHit.collider.bounds.min.y;
         controller.Body.position = controller.Body.position + (Vector2.down * difference);
         controller.move.y = 0.0f;
     }
 
-    void CheckBottomCollisions()
+    void ReactBottomCollision()
     {
         float difference = BottomHit.collider.bounds.max.y - controller.BoxCollider.bounds.min.y;
         controller.Body.position = controller.Body.position + (Vector2.up * difference);
         controller.move.y = 0.0f;
     }
 
-    void CheckLeftCollisions()
+    void ReactLeftCollision()
     {
         float difference = LeftHit.collider.bounds.max.x - controller.BoxCollider.bounds.min.x;
         controller.Body.position = controller.Body.position + (Vector2.right * difference);
         controller.move.x = 0.0f;
+        controller.RunSpeed = 0.0f;
     }
 
-    void CheckRightCollisions()
+    void ReactRightCollision()
     {
         float difference = controller.BoxCollider.bounds.max.x - RightHit.collider.bounds.min.x;
         controller.Body.position = controller.Body.position + (Vector2.left * difference);
         controller.move.x = 0.0f;
+        controller.RunSpeed = 0.0f;
     }
 }

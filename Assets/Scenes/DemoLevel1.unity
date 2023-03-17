@@ -2077,15 +2077,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 158823359871299105, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: maxSpeed
-      value: 8
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 158823359871299105, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: jumpHeight
-      value: 1
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 158823359871299105, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: fallDuration
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 158823359871299105, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: jumpDuration
-      value: 0.25
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 158823359871299105, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: playerCamera
