@@ -1,8 +1,5 @@
 using UnityEngine;
-
-// How can I turn the states used by each individual StateMachine universal, so it could be used by player and non-players?
-// Wouldn't this require the acceleration states to also be universal?
-// Should I instead have separate states for player entities and non-player entities?
+using UnityEngine.InputSystem;
 
 public class PlayerMovementStates
 {
@@ -15,13 +12,15 @@ public class PlayerMovementStates
     {
         this.controller = controller;
         currentState = State.IDLE;
+
+        /*controller._PlayerControls.Player.Jumping.started += context =>
+         * if (currentState == State.IDLE || currentState == State.RUN) return State.Jump;*/
     }
 
     public void UpdateMachine()
     {
-        // controls the movement of player
-        TickState();
         if (CheckingStateConditions() != State.NULL) ChangeState(CheckingStateConditions());
+        TickState();
     }
 
     public State CheckingStateConditions()
@@ -30,7 +29,7 @@ public class PlayerMovementStates
         {
             case State.IDLE:
                 if (!controller.Collisions.IsBottomColliding) return State.FALL;
-                else if (controller.JumpInput) return State.JUMP;
+                else if (controller.JumpInput) return State.JUMP; // You would check JustJumped
                 else if (controller.RunSpeed != 0) return State.RUN;
                 break;
 
@@ -82,13 +81,13 @@ public class PlayerMovementStates
 
             case State.JUMP:
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
-                controller.move.y += controller.JumpGravity * Time.fixedDeltaTime;
+                controller.move.y += controller.Gravity * Time.fixedDeltaTime;
                 break;
 
             case State.FALL:
                 if (controller.JumpInput) controller.ResetJumpBufferTimer();
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
-                controller.move.y += controller.FallGravity * Time.fixedDeltaTime;
+                controller.move.y += controller.Gravity * controller.gravityModifier * Time.fixedDeltaTime;
                 break;
         }
     }

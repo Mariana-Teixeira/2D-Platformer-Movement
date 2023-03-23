@@ -130,7 +130,6 @@ public class PlayerCollisions
         platformMask = LayerMask.GetMask("Platforms");
     }
 
-    // TODO: Should I turn this into a switch?
     public void UpdateCollisions()
     {
         if (IsTopHitColliding && controller.move.y > 0) ReactTopCollision();

@@ -15,7 +15,7 @@ public class PlayerAccelerationStates
 
     public void UpdateMachine()
     {
-        TickState(); // Calculates the speed variable for acceleration.
+        TickState();
         if (CheckingStateConditions() != State.NULL) ChangeState(CheckingStateConditions());
     }
 
