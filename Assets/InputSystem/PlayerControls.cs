@@ -44,24 +44,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Fire"",
-                    ""type"": ""Button"",
-                    ""id"": ""4ab01b66-eee6-448b-8727-39a57fa90b5d"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""MousePosition"",
-                    ""type"": ""Value"",
-                    ""id"": ""6ff133e8-e1a5-4b53-a6d4-8c7a74f97db0"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -108,76 +90,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Jumping"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""61c3c16c-d4e8-4353-b976-9561e8c337c8"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Fire"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c5718c4b-2434-45a3-82f0-dcd386fe77f7"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MousePosition"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""UserInterface"",
-            ""id"": ""904ae904-ba2f-4471-9f30-59911a5eca04"",
-            ""actions"": [
-                {
-                    ""name"": ""ExitGame"",
-                    ""type"": ""Button"",
-                    ""id"": ""e13e500b-4846-46d7-b3ac-1e6f47e4ac90"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""GoMenu"",
-                    ""type"": ""Button"",
-                    ""id"": ""c94c5374-8f73-4f51-a28c-9ab1adbe6f2e"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""1ac91336-33c2-4e2e-82c8-548d1287b01a"",
-                    ""path"": ""<Keyboard>/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ExitGame"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""db318df0-1eca-4b1a-acc4-6814db049731"",
-                    ""path"": ""<Keyboard>/m"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""GoMenu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -188,12 +100,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Running = m_Player.FindAction("Running", throwIfNotFound: true);
         m_Player_Jumping = m_Player.FindAction("Jumping", throwIfNotFound: true);
-        m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
-        m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
-        // UserInterface
-        m_UserInterface = asset.FindActionMap("UserInterface", throwIfNotFound: true);
-        m_UserInterface_ExitGame = m_UserInterface.FindAction("ExitGame", throwIfNotFound: true);
-        m_UserInterface_GoMenu = m_UserInterface.FindAction("GoMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -257,16 +163,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Running;
     private readonly InputAction m_Player_Jumping;
-    private readonly InputAction m_Player_Fire;
-    private readonly InputAction m_Player_MousePosition;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
         public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Running => m_Wrapper.m_Player_Running;
         public InputAction @Jumping => m_Wrapper.m_Player_Jumping;
-        public InputAction @Fire => m_Wrapper.m_Player_Fire;
-        public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -282,12 +184,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jumping.started += instance.OnJumping;
             @Jumping.performed += instance.OnJumping;
             @Jumping.canceled += instance.OnJumping;
-            @Fire.started += instance.OnFire;
-            @Fire.performed += instance.OnFire;
-            @Fire.canceled += instance.OnFire;
-            @MousePosition.started += instance.OnMousePosition;
-            @MousePosition.performed += instance.OnMousePosition;
-            @MousePosition.canceled += instance.OnMousePosition;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -298,12 +194,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jumping.started -= instance.OnJumping;
             @Jumping.performed -= instance.OnJumping;
             @Jumping.canceled -= instance.OnJumping;
-            @Fire.started -= instance.OnFire;
-            @Fire.performed -= instance.OnFire;
-            @Fire.canceled -= instance.OnFire;
-            @MousePosition.started -= instance.OnMousePosition;
-            @MousePosition.performed -= instance.OnMousePosition;
-            @MousePosition.canceled -= instance.OnMousePosition;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -321,70 +211,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
-
-    // UserInterface
-    private readonly InputActionMap m_UserInterface;
-    private List<IUserInterfaceActions> m_UserInterfaceActionsCallbackInterfaces = new List<IUserInterfaceActions>();
-    private readonly InputAction m_UserInterface_ExitGame;
-    private readonly InputAction m_UserInterface_GoMenu;
-    public struct UserInterfaceActions
-    {
-        private @PlayerControls m_Wrapper;
-        public UserInterfaceActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @ExitGame => m_Wrapper.m_UserInterface_ExitGame;
-        public InputAction @GoMenu => m_Wrapper.m_UserInterface_GoMenu;
-        public InputActionMap Get() { return m_Wrapper.m_UserInterface; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(UserInterfaceActions set) { return set.Get(); }
-        public void AddCallbacks(IUserInterfaceActions instance)
-        {
-            if (instance == null || m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Add(instance);
-            @ExitGame.started += instance.OnExitGame;
-            @ExitGame.performed += instance.OnExitGame;
-            @ExitGame.canceled += instance.OnExitGame;
-            @GoMenu.started += instance.OnGoMenu;
-            @GoMenu.performed += instance.OnGoMenu;
-            @GoMenu.canceled += instance.OnGoMenu;
-        }
-
-        private void UnregisterCallbacks(IUserInterfaceActions instance)
-        {
-            @ExitGame.started -= instance.OnExitGame;
-            @ExitGame.performed -= instance.OnExitGame;
-            @ExitGame.canceled -= instance.OnExitGame;
-            @GoMenu.started -= instance.OnGoMenu;
-            @GoMenu.performed -= instance.OnGoMenu;
-            @GoMenu.canceled -= instance.OnGoMenu;
-        }
-
-        public void RemoveCallbacks(IUserInterfaceActions instance)
-        {
-            if (m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        public void SetCallbacks(IUserInterfaceActions instance)
-        {
-            foreach (var item in m_Wrapper.m_UserInterfaceActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    public UserInterfaceActions @UserInterface => new UserInterfaceActions(this);
     public interface IPlayerActions
     {
         void OnRunning(InputAction.CallbackContext context);
         void OnJumping(InputAction.CallbackContext context);
-        void OnFire(InputAction.CallbackContext context);
-        void OnMousePosition(InputAction.CallbackContext context);
-    }
-    public interface IUserInterfaceActions
-    {
-        void OnExitGame(InputAction.CallbackContext context);
-        void OnGoMenu(InputAction.CallbackContext context);
     }
 }

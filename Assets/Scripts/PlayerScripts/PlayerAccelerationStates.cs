@@ -78,7 +78,7 @@ public class PlayerAccelerationStates
                 break;
 
             case State.DECELETARE:
-                controller.RunSpeed -= controller.Acceleration * Time.fixedDeltaTime;
+                controller.RunSpeed -= controller.Deceleration * Time.fixedDeltaTime;
                 break;
         }
 

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMovementStates
 {
@@ -12,9 +11,6 @@ public class PlayerMovementStates
     {
         this.controller = controller;
         currentState = State.IDLE;
-
-        /*controller._PlayerControls.Player.Jumping.started += context =>
-         * if (currentState == State.IDLE || currentState == State.RUN) return State.Jump;*/
     }
 
     public void UpdateMachine()
@@ -29,13 +25,13 @@ public class PlayerMovementStates
         {
             case State.IDLE:
                 if (!controller.Collisions.IsBottomColliding) return State.FALL;
-                else if (controller.JumpInput) return State.JUMP; // You would check JustJumped
+                else if (controller.JumpInput && !controller.attemptingToJump) return State.JUMP;
                 else if (controller.RunSpeed != 0) return State.RUN;
                 break;
 
             case State.RUN:
-                if (!controller.IsCoyoteTimeInEffect) return State.FALL;
-                else if (controller.JumpInput) return State.JUMP;
+                if (!controller.Collisions.IsBottomColliding) return State.FALL;
+                else if (controller.JumpInput && !controller.attemptingToJump) return State.JUMP;
                 else if (controller.RunSpeed == 0 && controller.RunInput == 0) return State.IDLE;
                 break;
 
@@ -45,8 +41,7 @@ public class PlayerMovementStates
                 break;
 
             case State.FALL:
-                if (controller.IsJumpBufferInEffect && controller.Collisions.IsBottomColliding) return State.JUMP;
-                else if (controller.Collisions.IsBottomColliding && controller.move.x != 0) return State.RUN;
+                if (controller.Collisions.IsBottomColliding && controller.move.x != 0) return State.RUN;
                 else if (controller.Collisions.IsBottomColliding) return State.IDLE;
                 break;
         }
@@ -56,7 +51,6 @@ public class PlayerMovementStates
 
     public void ChangeState(State state)
     {
-        ExitState();
         currentState = state;
         EnterState();
     }
@@ -65,7 +59,11 @@ public class PlayerMovementStates
     {
         switch (currentState)
         {
+            case State.IDLE:
+                controller.move.x = 0.0f;
+                break;
             case State.JUMP:
+                controller.attemptingToJump = true;
                 controller.move.y = controller.InitialJumpVelocity;
                 break;
         }
@@ -75,30 +73,22 @@ public class PlayerMovementStates
     {
         switch (currentState)
         {
+            case State.IDLE:
+                if (!controller.JumpInput) controller.attemptingToJump = false;
+                break;
             case State.RUN:
+                if (!controller.JumpInput) controller.attemptingToJump = false;
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
                 break;
 
             case State.JUMP:
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
-                controller.move.y += controller.Gravity * Time.fixedDeltaTime;
+                controller.move.y += controller.JumpGravity * Time.fixedDeltaTime;
                 break;
 
             case State.FALL:
-                if (controller.JumpInput) controller.ResetJumpBufferTimer();
                 controller.move.x = controller.AccelerationDirection * controller.RunSpeed;
-                controller.move.y += controller.Gravity * controller.gravityModifier * Time.fixedDeltaTime;
-                break;
-        }
-    }
-
-    public void ExitState()
-    {
-        switch(currentState)
-        {
-            case State.FALL:
-                controller.ResetCoyoteTimer();
-                controller.ResetJumpBufferTimer();
+                controller.move.y += controller.FallGravity * Time.fixedDeltaTime;
                 break;
         }
     }

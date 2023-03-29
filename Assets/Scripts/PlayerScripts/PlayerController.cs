@@ -1,12 +1,18 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
-// TODO: Comment on more functions so the code become more clear to read.
-// TODO: Add a requirement for attaching this script to an object (requires Rigidbody2D, BoxCollider, etc...)
-// TODO: I want CoyoteTime and JumpBuffer to be counted in frames independent of framerate.
-// TODO: Avoid using FixedFramerate, used ElapsedTime instead.
+// TODO: Improve documentation of code.
+// TODO: Allow CoyoteTime/JumpBuffer to use ElapsedTime.
+// TODO: Use ElapsedTime instead of FixedFramerate.
 
+[RequireComponent (typeof(Rigidbody2D))]
+[RequireComponent (typeof(BoxCollider2D))]
 public class PlayerController : MonoBehaviour
 {
+    public bool attemptingToJump;
+
     PlayerCollisions playerCollisions;
     PlayerMovementStates playerMovement;
     PlayerAccelerationStates playerAcceleration;
@@ -19,24 +25,22 @@ public class PlayerController : MonoBehaviour
     float runInput;
     bool jumpInput;
 
-    public Vector2 move; // I can't figure out how to make it a private variable.
+    public Vector2 move;
 
-    [SerializeField] float jumpDuration;
+    [SerializeField] float timeToJumpApex;
+    [SerializeField] float timeToGround;
     [SerializeField] float jumpHeight;
-    float gravity;
-    [SerializeField] float gravityMultiplier;
+    float jumpGravity;
+    float fallGravity;
     float initialJumpVelocity;
 
     [SerializeField] float maxSpeed;
     [SerializeField] float timeToMaxSpeed;
+    [SerializeField] float timeToStop;
     float runSpeed;
     float acceleration;
+    float deceleration;
     float accelerationDirection;
-
-    int coyoteFrame;
-    [SerializeField] int coyoteCounter;
-    int jumpBufferFrame;
-    [SerializeField] int jumpBufferCounter;
 
 
     #region Properties
@@ -74,23 +78,19 @@ public class PlayerController : MonoBehaviour
         {
             return jumpInput;
         }
-        set
-        {
-            jumpInput = value;
-        }
     }
-    public float Gravity
+    public float JumpGravity
     {
         get
         {
-            return gravity;
+            return jumpGravity;
         }
     }
-    public float gravityModifier
+    public float FallGravity
     {
         get
         {
-            return gravityModifier;
+            return fallGravity;
         }
     }
     public float InitialJumpVelocity
@@ -118,6 +118,13 @@ public class PlayerController : MonoBehaviour
             return acceleration;
         }
     }
+    public float Deceleration
+    {
+        get
+        {
+            return deceleration;
+        }
+    }
     public float AccelerationDirection
     {
         get
@@ -134,20 +141,6 @@ public class PlayerController : MonoBehaviour
         get
         {
             return maxSpeed;
-        }
-    }
-    public bool IsCoyoteTimeInEffect
-    {
-        get
-        {
-            return coyoteFrame <= 0 ? false : true;
-        }
-    }
-    public bool IsJumpBufferInEffect
-    {
-        get
-        {
-            return jumpBufferFrame <= 0 ? false : true;
         }
     }
 
@@ -168,10 +161,13 @@ public class PlayerController : MonoBehaviour
         playerInputMap = new PlayerControls();
         playerInputMap.Enable();
 
-        float jumpApex = jumpDuration / 2;
-        gravity  = (-2 * jumpHeight) / Mathf.Pow(jumpApex, 2);
-        initialJumpVelocity = -gravity * jumpApex;
+        float jumpApex = timeToJumpApex / 2;
+        float groundApex = timeToGround / 2;
+        jumpGravity  = (-2 * jumpHeight) / (timeToJumpApex * timeToJumpApex);
+        fallGravity  = (-2 * jumpHeight) / (timeToGround * timeToGround);
+        initialJumpVelocity = -jumpGravity * timeToJumpApex;
         acceleration = maxSpeed / timeToMaxSpeed;
+        deceleration = maxSpeed / timeToStop;
 
         playerMovement = new PlayerMovementStates(this);
         playerCollisions = new PlayerCollisions(this);
@@ -184,50 +180,30 @@ public class PlayerController : MonoBehaviour
         playerInputMap.Player.Running.canceled += context => runInput = 0;
     }
 
-    void Update()
-    {
-        TickTimers();
-    }
-
-    void TickTimers()
-    {
-        if (!playerCollisions.IsBottomColliding)
-        {
-            TickJumpBuffer();
-            TickCoyoteTimer();
-        }
-    }
-
     private void FixedUpdate()
     {
         playerAcceleration.UpdateMachine();
         playerMovement.UpdateMachine();
-        playerCollisions.UpdateCollisions();
-        MovePlayer();
+
+        Vector2 position = body.position + move * Time.fixedDeltaTime;
+        position = playerCollisions.UpdateCollisions(position);
+
+        MovePlayer(position);
     }
 
-    void MovePlayer()
+    void MovePlayer(Vector2 position)
     {
-        body.position = body.position + (move * Time.fixedDeltaTime);
+        body.position = position;
     }
 
-    public void TickCoyoteTimer()
+    void OnDrawGizmos()
     {
-        coyoteFrame -= 1;
-    }
+        if (playerCollisions == null) return;
 
-    public void ResetCoyoteTimer()
-    {
-        coyoteFrame = coyoteCounter;
-    }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(playerCollisions.hit.point, 0.1f);
 
-    public void TickJumpBuffer()
-    {
-        jumpBufferFrame -= 1;
-    }
-
-    public void ResetJumpBufferTimer()
-    {
-        jumpBufferFrame = jumpBufferCounter;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(playerCollisions.hit.point, playerCollisions.hit.normal);
     }
 }

@@ -1,98 +1,38 @@
+using System.Net;
+using System.Transactions;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerCollisions
 {
     PlayerController controller;
+    public RaycastHit2D hit;
     LayerMask platformMask;
 
-    #region HitBox Properties
-    private Vector2 PlayerCenter
+    private Vector2 HitBoxSize
     {
         get
         {
-            return controller.Body.position;
-        }
-    }
-    private Vector2 PlayerSize
-    {
-        get
-        {
-            return controller.BoxCollider.size;
+            return new Vector2(controller.BoxCollider.size.x - 0.1f, controller.BoxCollider.size.y - 0.1f);
         }
     }
 
-    private Vector2 HitBoxSize_TopBottom
-    {
-        get
-        {
-            return new Vector2(PlayerSize.x * 0.5f, 0.1f);
-        }
-    }
-    private Vector2 HitBoxSize_LeftRight
-    {
-        get
-        {
-            return new Vector2(0.1f, PlayerSize.y * 0.5f);
-        }
-    }
-    #endregion
-
-    #region HitBoxes
-    public RaycastHit2D TopHit
-    {
-        get
-        {
-            return Physics2D.BoxCast(
-                PlayerCenter,
-                HitBoxSize_TopBottom,
-                0.0f,
-                Vector2.up,
-                PlayerSize.y * 0.5f,
-                platformMask);
-        }
-    }
     public RaycastHit2D BottomHit
     {
         get
         {
             return Physics2D.BoxCast(
-                PlayerCenter,
-                HitBoxSize_TopBottom,
-                0.0f,
-                Vector2.down,
-                PlayerSize.y * 0.5f,
-                platformMask);
+            controller.Body.position,
+            new Vector2(HitBoxSize.x, 0.1f),
+            0.0f,
+            Vector2.down,
+            HitBoxSize.y * 0.5f,
+            platformMask);
         }
     }
-    public RaycastHit2D LeftHit
-    {
-        get
-        {
-            return Physics2D.BoxCast(
-                PlayerCenter,
-                HitBoxSize_LeftRight,
-                0.0f,
-                Vector2.left,
-                PlayerSize.x * 0.35f,
-                platformMask);
-        }
-    }
-    public RaycastHit2D RightHit
-    {
-        get
-        {
-            return Physics2D.BoxCast(
-                PlayerCenter,
-                HitBoxSize_LeftRight,
-                0.0f,
-                Vector2.right,
-                PlayerSize.x * 0.35f,
-                platformMask);
-        }
-    }
-    #endregion
 
-    #region Check for Collisions
     public bool IsBottomColliding
     {
         get
@@ -100,71 +40,84 @@ public class PlayerCollisions
             return BottomHit.collider != null;
         }
     }
-    public bool IsTopHitColliding
-    {
-        get
-        {
-            return TopHit.collider != null;
-        }
-    }
-    public bool IsLeftHitColliding
-    {
-        get
-        {
-            return LeftHit.collider != null;
-        }
-    }
-    public bool IsRightHitColliding
-    {
-        get
-        {
-            return RightHit.collider != null;
-        }
-    }
-    #endregion
 
     public PlayerCollisions(PlayerController controller)
     {
         this.controller = controller;
-
         platformMask = LayerMask.GetMask("Platforms");
     }
 
-    public void UpdateCollisions()
+    public Vector2 UpdateCollisions(Vector2 position)
     {
-        if (IsTopHitColliding && controller.move.y > 0) ReactTopCollision();
-        if (IsBottomColliding && controller.move.y < 0) ReactBottomCollision();
-        if (IsLeftHitColliding && controller.move.x < 0) ReactLeftCollision();
-        if (IsRightHitColliding && controller.move.x > 0) ReactRightCollision();
+        if (!IsItColliding(position)) return position;
+        position = MovePlayerAwayOnTheXAxis(position);
+        return position;
     }
 
-    void ReactTopCollision()
+    bool IsItColliding(Vector2 position)
     {
-        float difference = controller.BoxCollider.bounds.max.y - TopHit.collider.bounds.min.y;
-        controller.Body.position = controller.Body.position + (Vector2.down * difference);
-        controller.move.y = 0.0f;
+        // Creates a BoxCast in the position the body wants to move.
+        hit = Physics2D.BoxCast(
+                position,
+                HitBoxSize,
+                0.0f,
+                controller.move.normalized,
+                0.1f,
+                platformMask);
+
+        // Check if the BoxCast is collided with anything.
+        if (hit.collider != null) return true;
+        else return false;
     }
 
-    void ReactBottomCollision()
+    Vector2 MovePlayerAwayOnTheYAxis(Vector2 position)
     {
-        float difference = BottomHit.collider.bounds.max.y - controller.BoxCollider.bounds.min.y;
-        controller.Body.position = controller.Body.position + (Vector2.up * difference);
-        controller.move.y = 0.0f;
+        float bounds_min_y = position.y - (controller.BoxCollider.size.y / 2);
+        float bounds_max_y = position.y + (controller.BoxCollider.size.y / 2);
+
+        if (hit.normal == Vector2.up)
+        {
+            float difference = bounds_min_y - hit.collider.bounds.max.y;
+            difference = Mathf.Abs(difference);
+            position += hit.normal * difference;
+            controller.move.y = 0f;
+        }
+
+        if (hit.normal == Vector2.down)
+        {
+            float difference = bounds_max_y - hit.collider.bounds.min.y;
+            difference = Mathf.Abs(difference);
+            position += hit.normal * difference;
+            controller.move.y = 0f;
+        }
+
+        if (IsItColliding(position)) position = MovePlayerAwayOnTheXAxis(position);
+        return position;
     }
 
-    void ReactLeftCollision()
+    Vector2 MovePlayerAwayOnTheXAxis(Vector2 position)
     {
-        float difference = LeftHit.collider.bounds.max.x - controller.BoxCollider.bounds.min.x;
-        controller.Body.position = controller.Body.position + (Vector2.right * difference);
-        controller.move.x = 0.0f;
-        controller.RunSpeed = 0.0f;
-    }
+        float bounds_max_x = position.x + (controller.BoxCollider.size.x / 2);
+        float bounds_min_x = position.x - (controller.BoxCollider.size.x / 2);
 
-    void ReactRightCollision()
-    {
-        float difference = controller.BoxCollider.bounds.max.x - RightHit.collider.bounds.min.x;
-        controller.Body.position = controller.Body.position + (Vector2.left * difference);
-        controller.move.x = 0.0f;
-        controller.RunSpeed = 0.0f;
+
+        if (hit.normal == Vector2.left)
+        {
+            float difference = bounds_max_x - hit.collider.bounds.min.x;
+            difference = Mathf.Abs(difference);
+            position += hit.normal * difference;
+            controller.move.x = 0f;
+        }
+
+        if (hit.normal == Vector2.right)
+        {
+            float difference = bounds_min_x - hit.collider.bounds.max.x;
+            difference = Mathf.Abs(difference);
+            position += hit.normal * difference;
+            controller.move.x = 0f;
+        }
+
+        if (IsItColliding(position)) position = MovePlayerAwayOnTheYAxis(position);
+        return position;
     }
 }
