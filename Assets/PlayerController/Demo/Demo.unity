@@ -1507,8 +1507,32 @@ PrefabInstance:
       value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: Data.fallTime
+      value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: Data.jumpTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: Data.maxSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: coyoteCounter
       value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: data.fallTime
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: data.jumpTime
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: data.maxSpeed
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: timeToJumpApex
@@ -1519,12 +1543,36 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: Data.jumpHeight
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: data.jumpHeight
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: gravityMultiplier
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: jumpBufferCounter
       value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: Data.accelerationTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: Data.decelerationTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: data.accelerationTime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: data.decelerationTime
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: fallGravityMultiplier
@@ -1580,7 +1628,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5030039723222525191, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.5
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 5030039723222525191, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1649,7 +1697,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1470015684163120924, guid: dd88129c109984d4c8860a47f4902f70, type: 3}
       propertyPath: m_Name
-      value: PlayerCamera
+      value: Camera
       objectReference: {fileID: 0}
     - target: {fileID: 1470015684163120924, guid: dd88129c109984d4c8860a47f4902f70, type: 3}
       propertyPath: m_IsActive
