@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace marianateixeira.playercontroller
+namespace marianateixeira.PlayerController
 {
     public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {

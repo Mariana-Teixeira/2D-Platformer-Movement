@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace marianateixeira.playercontroller
+namespace marianateixeira.PlayerController
 {
     [Serializable]
     public struct PlayerData

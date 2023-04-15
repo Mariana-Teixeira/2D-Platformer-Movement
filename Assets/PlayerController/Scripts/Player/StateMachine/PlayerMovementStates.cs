@@ -1,18 +1,17 @@
 using UnityEngine;
 
-namespace marianateixeira.playercontroller
+namespace marianateixeira.PlayerController
 {
+
     public class PlayerMovementStates
     {
         PlayerController controller;
-
         public enum State { IDLE, RUN, JUMP, FALL, NULL };
-        State currentState;
+        public State currentState { get; private set; }
 
         public PlayerMovementStates(PlayerController controller)
         {
             this.controller = controller;
-
             currentState = State.IDLE;
         }
 
@@ -39,7 +38,7 @@ namespace marianateixeira.playercontroller
                     break;
 
                 case State.JUMP:
-                    if (controller.Move.y < 0 || !controller.JumpInput) return State.FALL;
+                    if (controller.Move.y < 0 || !controller.JumpInput || controller.Collisions.IsTopColliding) return State.FALL;
                     else if (controller.Collisions.IsBottomColliding) return State.IDLE;
                     break;
 
@@ -63,11 +62,17 @@ namespace marianateixeira.playercontroller
             switch (currentState)
             {
                 case State.IDLE:
-                    controller.Move = new Vector2(0.0f, controller.Move.y);
+                    controller.Move = Vector2.zero;
+                    break;
+                case State.RUN:
+                    controller.Move.y = 0.0f;
                     break;
                 case State.JUMP:
                     controller.Data.ReadyToJump = false;
                     controller.Move.y = controller.Data.InitialJumpVelocity;
+                    break;
+                case State.FALL:
+                    controller.Move.y = 0.0f;
                     break;
             }
         }

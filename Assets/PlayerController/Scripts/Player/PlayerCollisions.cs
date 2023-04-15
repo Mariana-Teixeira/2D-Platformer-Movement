@@ -1,8 +1,6 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-namespace marianateixeira.playercontroller
+namespace marianateixeira.PlayerController
 {
     public class PlayerCollisions
     {
@@ -34,6 +32,62 @@ namespace marianateixeira.playercontroller
             }
         }
 
+        public bool IsTopColliding
+        {
+            get
+            {
+                RaycastHit2D hit = Physics2D.BoxCast(
+                controller.Body.position,
+                new Vector2(HitboxSize.x, 0.1f),
+                0.0f,
+                Vector2.up,
+                HitboxSize.y * 0.5f,
+                platformMask);
+
+                return hit.collider != null;
+            }
+        }
+
+        public bool IsLeftColliding
+        {
+            get
+            {
+                RaycastHit2D hit = Physics2D.BoxCast(
+                controller.Body.position,
+                new Vector2(0.1f, HitboxSize.y),
+                0.0f,
+                Vector2.left,
+                HitboxSize.x * 0.5f,
+                platformMask);
+
+                return hit.collider != null;
+            }
+        }
+
+        public bool IsRightColliding
+        {
+            get
+            {
+                RaycastHit2D hit = Physics2D.BoxCast(
+                controller.Body.position,
+                new Vector2(0.1f, HitboxSize.y),
+                0.0f,
+                Vector2.right,
+                HitboxSize.x * 0.5f,
+                platformMask);
+
+                return hit.collider != null;
+            }
+        }
+
+        public bool AreSidesColliding
+        {
+            get
+            {
+                return IsLeftColliding || IsRightColliding;
+            }
+        }
+
         public PlayerCollisions(PlayerController controller)
         {
             this.controller = controller;
@@ -42,9 +96,9 @@ namespace marianateixeira.playercontroller
 
         public void UpdateCollisions(ref Vector2 position)
         {
-            if (!IsItColliding(position)) return;
+            if (!IsItColliding()) return;
 
-            foreach(var hit in hits)
+            foreach (var hit in hits)
             {
                 if (hit.normal == Vector2.up || hit.normal == Vector2.down)
                     position = CompensateVerticalAxis(hit, position);
@@ -54,14 +108,14 @@ namespace marianateixeira.playercontroller
 
         }
 
-        bool IsItColliding(Vector2 position)
+        bool IsItColliding()
         {
             hits = Physics2D.BoxCastAll(
-                    position,
+                    controller.Body.position,
                     HitboxSize,
                     0.0f,
                     controller.Move.normalized,
-                    0.1f,
+                    controller.Move.magnitude * Time.fixedDeltaTime,
                     platformMask);
 
             if (hits.Length > 0) return true;
@@ -75,13 +129,12 @@ namespace marianateixeira.playercontroller
             float difference = 0.0f;
 
             if (hit.normal == Vector2.up)
-                difference = bounds_min_y - hit.collider.bounds.max.y;
+                difference = bounds_min_y - hit.point.y;
             else if (hit.normal == Vector2.down)
-                difference = bounds_max_y - hit.collider.bounds.min.y;
+                difference = bounds_max_y - hit.point.y;
 
             difference = Mathf.Abs(difference);
             position += hit.normal * difference;
-            controller.Move = new Vector2(controller.Move.x, 0f);
 
             return position;
         }
@@ -92,14 +145,14 @@ namespace marianateixeira.playercontroller
             float bounds_min_x = position.x - (controller.BoxCollider.size.x / 2);
             float difference = 0.0f;
 
+
             if (hit.normal == Vector2.left)
-                difference = bounds_max_x - hit.collider.bounds.min.x;
+                difference = bounds_max_x - hit.point.x;
             else if (hit.normal == Vector2.right)
-                difference = bounds_min_x - hit.collider.bounds.max.x;
+                difference = bounds_min_x - hit.point.x;
 
             difference = Mathf.Abs(difference);
             position += hit.normal * difference;
-            controller.Move = new Vector2(0f, controller.Move.y);
 
             return position;
         }

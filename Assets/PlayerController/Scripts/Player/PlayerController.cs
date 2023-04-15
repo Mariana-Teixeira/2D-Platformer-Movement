@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace marianateixeira.playercontroller
+namespace marianateixeira.PlayerController
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(BoxCollider2D))]

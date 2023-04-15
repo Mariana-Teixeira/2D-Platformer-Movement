@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace marianateixeira.playercontroller
+namespace marianateixeira.PlayerController
 {
     public class PlayerAccelerationStates
     {
@@ -27,21 +27,27 @@ namespace marianateixeira.playercontroller
             switch (currentState)
             {
                 case State.STOP:
-                    if (controller.RunInput != 0) return State.ACCELERATE;
+                    if (controller.Collisions.IsLeftColliding && controller.RunInput == 1
+                        || controller.Collisions.IsRightColliding && controller.RunInput == -1
+                        || !controller.Collisions.AreSidesColliding && controller.RunInput != 0) return State.ACCELERATE;
                     break;
-
                 case State.ACCELERATE:
+                    if (controller.Collisions.AreSidesColliding) return State.STOP;
                     if (controller.RunInput != controller.Data.AccelerationDirection) return State.DECELETARE;
-                    if (controller.Data.RunSpeed >= controller.Data.MaxSpeed) return State.MAXSPEED;
+                    else if (controller.Data.RunSpeed >= controller.Data.MaxSpeed) return State.MAXSPEED;
                     break;
 
                 case State.MAXSPEED:
-                    if (controller.RunInput != controller.Data.AccelerationDirection) return State.DECELETARE;
+                    if (controller.Collisions.AreSidesColliding) return State.STOP;
+                    else if (controller.RunInput == 0.0f && controller.Move.x == 0.0f) return State.STOP;
+                    else if (controller.RunInput != controller.Data.AccelerationDirection) return State.DECELETARE;
                     break;
 
                 case State.DECELETARE:
-                    if (controller.RunInput == controller.Data.AccelerationDirection) return State.ACCELERATE;
-                    if (controller.Data.RunSpeed <= 0.05f) return State.STOP;
+                    if (controller.Collisions.AreSidesColliding) return State.STOP;
+                    else if (controller.RunInput == controller.Data.AccelerationDirection) return State.ACCELERATE;
+                    else if (controller.RunInput == -controller.Data.AccelerationDirection && controller.Data.RunSpeed <= 0.05f) return State.ACCELERATE;
+                    else if (controller.RunInput == 0.0f && controller.Data.RunSpeed <= 0.05f) return State.STOP;
                     break;
             }
 
@@ -58,6 +64,9 @@ namespace marianateixeira.playercontroller
         {
             switch (currentState)
             {
+                case State.STOP:
+                    controller.Move.x = 0.0f;
+                    break;
                 case State.ACCELERATE:
                     if (controller.RunInput != 0) controller.Data.AccelerationDirection = controller.RunInput;
                     break;
@@ -88,5 +97,4 @@ namespace marianateixeira.playercontroller
 
         }
     }
-
 }

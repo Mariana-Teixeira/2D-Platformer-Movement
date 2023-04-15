@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace marianateixeira.playercontroller
+namespace marianateixeira.PlayerController
 {
     public class CameraBehaviour : MonoBehaviour
     {
