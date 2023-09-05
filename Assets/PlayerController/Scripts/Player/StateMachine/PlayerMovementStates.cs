@@ -38,7 +38,8 @@ namespace marianateixeira.PlayerController
                     break;
 
                 case State.JUMP:
-                    if (controller.Move.y < 0 || !controller.JumpInput || controller.Collisions.IsTopColliding) return State.FALL;
+                    if (controller.Move.y < 0 || controller.Collisions.IsTopColliding) return State.FALL;
+                    else if (controller.Data.variableJump && !controller.JumpInput) return State.FALL;
                     else if (controller.Collisions.IsBottomColliding) return State.IDLE;
                     break;
 
@@ -64,13 +65,16 @@ namespace marianateixeira.PlayerController
                 case State.IDLE:
                     controller.Move = Vector2.zero;
                     break;
+
                 case State.RUN:
                     controller.Move.y = 0.0f;
                     break;
+
                 case State.JUMP:
                     controller.Data.ReadyToJump = false;
                     controller.Move.y = controller.Data.InitialJumpVelocity;
                     break;
+
                 case State.FALL:
                     controller.Move.y = 0.0f;
                     break;
@@ -84,6 +88,7 @@ namespace marianateixeira.PlayerController
                 case State.IDLE:
                     if (!controller.JumpInput) controller.Data.ReadyToJump = true;
                     break;
+
                 case State.RUN:
                     if (!controller.JumpInput) controller.Data.ReadyToJump = true;
                     controller.Move.x = controller.Data.AccelerationDirection * controller.Data.RunSpeed;

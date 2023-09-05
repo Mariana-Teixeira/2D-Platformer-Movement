@@ -1360,6 +1360,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
+      propertyPath: Data.variableJump
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197305231068429235, guid: 610474be55c2cf3429953b3e9646216a, type: 3}
       propertyPath: gravityMultiplier
       value: 2
       objectReference: {fileID: 0}

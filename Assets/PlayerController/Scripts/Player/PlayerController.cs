@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace marianateixeira.PlayerController
 {
@@ -28,6 +29,11 @@ namespace marianateixeira.PlayerController
             InititializeComponents();
             EnableInputs();
         }
+
+        private void OnEnable() => Data.LoadDataFromFile();
+        private void OnDisable() => Data.SaveDataToFile();
+
+        public void RecalculatePhysics() => Data.Initialize();
 
         void InititializeComponents()
         {
