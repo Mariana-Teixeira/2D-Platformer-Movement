@@ -1,1 +1,1 @@
-{"VariableJump":false,"MaxSpeed":8.0,"AccelerationTime":0.5,"DecelerationTime":0.25,"JumpHeight":3.0,"JumpTime":0.3499999940395355,"FallTime":0.30000001192092898}
+{"MaxSpeed":8.0,"AccelerationTime":0.5,"DecelerationTime":0.25,"VariableJump":false,"JumpHeight":4.0,"JumpTime":0.3499999940395355,"FallTime":0.30000001192092898}
